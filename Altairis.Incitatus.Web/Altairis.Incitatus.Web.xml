@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Altairis.Incitatus.Web</name>
+    </assembly>
+    <members>
+        <member name="M:Altairis.Incitatus.Web.Api.Management.SitesController.GetIndex">
+            <summary>
+            Gets the list of sites.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Altairis.Incitatus.Web.Api.Management.SitesController.Get(System.Guid)">
+            <summary>
+            Gets the specified site.
+            </summary>
+            <param name="siteId">The site identifier.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Altairis.Incitatus.Web.Api.Management.SitesController.Post(Altairis.Incitatus.Web.Api.Management.SitesController.NewSiteModel)">
+            <summary>
+            Creates new site.
+            </summary>
+            <param name="model">The site model.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Altairis.Incitatus.Web.Api.Management.SitesController.Put(System.Guid,Altairis.Incitatus.Web.Api.Management.SitesController.UpdateSiteModel)">
+            <summary>
+            Updates the specified site.
+            </summary>
+            <param name="siteId">The site identifier.</param>
+            <param name="model">The site model.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Altairis.Incitatus.Web.Api.Management.SitesController.Delete(System.Guid)">
+            <summary>
+            Deletes the specified site.
+            </summary>
+            <param name="siteId">The site identifier.</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

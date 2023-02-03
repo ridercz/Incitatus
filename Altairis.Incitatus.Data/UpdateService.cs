@@ -38,23 +38,34 @@ public class UpdateService : BackgroundService {
 
                 // Process sites that need to be updated
                 var sitesToUpdate = await dc.Sites.Where(x => x.UpdateRequired).ToListAsync(stoppingToken);
-                if (sitesToUpdate.Any()) foreach (var site in sitesToUpdate) try {
+                if (sitesToUpdate.Any()) {
+                    foreach (var site in sitesToUpdate) {
+                        try {
                             await this.UpdateSingleSitemapAsync(site, dc, stoppingToken);
                         } catch (Exception ex) {
-                            this.logger.LogError(ex, "Cannot load or parse sitemap for site {siteId} ({siteName}).", site.Id, site.Name);
-                            throw;
+                            this.logger.LogError(ex, "Error while processing sitemap for site {siteId} ({siteName}).", site.Id, site.Name);
                         }
-                else this.logger.LogDebug("No sites need to be updated.");
+                    }
+                } else {
+                    this.logger.LogDebug("No sites need to be updated.");
+                }
 
                 // Process pages that need to be updated
                 var pagesToUpdate = await dc.Pages.Include(x => x.Site).Where(x => x.UpdateRequired).ToListAsync(stoppingToken);
-                if (pagesToUpdate.Any()) foreach (var page in pagesToUpdate) try {
+                if (pagesToUpdate.Any()) {
+                    foreach (var page in pagesToUpdate) {
+                        try {
                             var changed = await UpdateSinglePageAsync(page, stoppingToken);
                             if (changed) await dc.SaveChangesAsync(stoppingToken);
                         } catch (Exception ex) {
                             logger.LogError(ex, "Error while processing page {pageId} ({pageUrl}).", page.Id, page.Url);
                         }
-                else this.logger.LogDebug("No pages need to be updated.");
+                        // Wait between requests if configyred
+                        if (this.options.DelayBetweenPageRequests > TimeSpan.Zero) await Task.Delay(this.options.DelayBetweenPageRequests);
+                    }
+                } else {
+                    this.logger.LogDebug("No pages need to be updated.");
+                }
             }
 
             // Wait for a while
@@ -117,14 +128,13 @@ public class UpdateService : BackgroundService {
     private async Task<IList<SitemapItem>> GetSitemapItems(Site site) {
         // Load XML document from stream
         var doc = new XmlDocument();
-        var mgr = new XmlNamespaceManager(doc.NameTable);
-        mgr.AddNamespace("sm", "http://www.sitemaps.org/schemas/sitemap/0.9");
-
         using var stream = await this.httpClient.GetStreamAsync(site.SitemapUrl);
         doc.Load(stream);
         this.logger.LogDebug("Loaded sitemap for site {siteId} ({siteName}) from URL {siteUrl}.", site.Id, site.Name, site.SitemapUrl);
 
         // Get all items
+        var mgr = new XmlNamespaceManager(doc.NameTable);
+        mgr.AddNamespace("sm", "http://www.sitemaps.org/schemas/sitemap/0.9");
         var urlElements = doc.SelectNodes("/sm:urlset/sm:url[sm:loc and sm:lastmod]", mgr)?.Cast<XmlElement>();
         if (urlElements is null || !urlElements.Any()) return new List<SitemapItem>();
 
@@ -176,19 +186,8 @@ public class UpdateService : BackgroundService {
             this.logger.LogWarning("The page {pageId} ({pageUrl}) has null or empty content node.", page.Id, page.Url);
             return false;
         }
-        page.Title = getStringFromMetadata(doc,
-            "/html/head/meta[@name='title']",
-            "/html/head/meta[@name='dc:title']",
-            "/html/head/meta[@name='dcterms:title']",
-            "/html/head/meta[@name='twitter:title']",
-            "/html/head/meta[@property='og:title']",
-            "/html/head/title") ?? page.Url;
-        page.Description = getStringFromMetadata(doc,
-            "/html/head/meta[@name='description']",
-            "/html/head/meta[@name='dc:abstract']",
-            "/html/head/meta[@name='dcterms:abstract']",
-            "/html/head/meta[@name='twitter:description']",
-            "/html/head/meta[@property='og:description']") ?? page.Title;
+        page.Title = getStringFromMetadata(doc, this.options.TitleMetaFields.ToArray()) ?? page.Url;
+        page.Description = getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title;
         page.Title = limitMaxLength(page.Title, 1000);
         page.Description = limitMaxLength(page.Description, 1000);
         page.DateLastUpdated = this.dateProvider.Now;
@@ -206,5 +205,23 @@ public record UpdateServiceOptions {
     public TimeSpan PollInterval { get; set; } = TimeSpan.FromSeconds(60);
 
     public TimeSpan ConnectionTimeout { get; set; } = TimeSpan.FromSeconds(10);
+
+    public TimeSpan DelayBetweenPageRequests { get; set; } = TimeSpan.Zero;
+
+    public ICollection<string> TitleMetaFields { get; set; } = new[] {
+        "/html/head/meta[@name='title']",
+        "/html/head/meta[@name='dc:title']",
+        "/html/head/meta[@name='dcterms:title']",
+        "/html/head/meta[@name='twitter:title']",
+        "/html/head/meta[@property='og:title']"
+    };
+
+    public ICollection<string> DescriptionMetaFields { get; set; } = new[] {
+        "/html/head/meta[@name='description']",
+        "/html/head/meta[@name='dc:abstract']",
+        "/html/head/meta[@name='dcterms:abstract']",
+        "/html/head/meta[@name='twitter:description']",
+        "/html/head/meta[@property='og:description']"
+    };
 
 }

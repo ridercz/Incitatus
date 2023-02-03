@@ -30,8 +30,6 @@ public class Site {
 
     public ICollection<Page> Pages { get; set; } = new HashSet<Page>();
 
-    public ICollection<EventLogItem> Events { get; set; } = new HashSet<EventLogItem>();
-
     // Helper methods
 
     private const string UpdateKeyAlphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";

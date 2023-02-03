@@ -15,8 +15,6 @@ public class IncitatusDbContext : DbContext {
 
     public DbSet<Page> Pages => this.Set<Page>();
 
-    public DbSet<EventLogItem> EventLog => this.Set<EventLogItem>();
-
     // Methods
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {

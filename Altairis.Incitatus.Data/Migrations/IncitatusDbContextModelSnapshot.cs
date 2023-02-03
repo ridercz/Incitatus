@@ -22,38 +22,6 @@ namespace Altairis.Incitatus.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Altairis.Incitatus.Data.EventLogItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(2147483647)
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("PageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Severity")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("SiteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PageId");
-
-                    b.HasIndex("SiteId");
-
-                    b.ToTable("EventLog");
-                });
-
             modelBuilder.Entity("Altairis.Incitatus.Data.Page", b =>
                 {
                     b.Property<Guid>("Id")
@@ -140,23 +108,6 @@ namespace Altairis.Incitatus.Data.Migrations
                     b.ToTable("Sites");
                 });
 
-            modelBuilder.Entity("Altairis.Incitatus.Data.EventLogItem", b =>
-                {
-                    b.HasOne("Altairis.Incitatus.Data.Page", "Page")
-                        .WithMany("Events")
-                        .HasForeignKey("PageId");
-
-                    b.HasOne("Altairis.Incitatus.Data.Site", "Site")
-                        .WithMany("Events")
-                        .HasForeignKey("SiteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Page");
-
-                    b.Navigation("Site");
-                });
-
             modelBuilder.Entity("Altairis.Incitatus.Data.Page", b =>
                 {
                     b.HasOne("Altairis.Incitatus.Data.Site", "Site")
@@ -168,15 +119,8 @@ namespace Altairis.Incitatus.Data.Migrations
                     b.Navigation("Site");
                 });
 
-            modelBuilder.Entity("Altairis.Incitatus.Data.Page", b =>
-                {
-                    b.Navigation("Events");
-                });
-
             modelBuilder.Entity("Altairis.Incitatus.Data.Site", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("Pages");
                 });
 #pragma warning restore 612, 618

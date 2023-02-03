@@ -10,12 +10,14 @@ namespace Altairis.Incitatus.Web.Api.Management;
 public class SitesController : ControllerBase {
     private readonly IncitatusDbContext dc;
     private readonly IDateProvider dateProvider;
+    private readonly ILogger<SitesController> logger;
 
     // Constructor
 
-    public SitesController(IncitatusDbContext dc, IDateProvider dateProvider) {
+    public SitesController(IncitatusDbContext dc, IDateProvider dateProvider, ILogger<SitesController> logger) {
         this.dc = dc;
         this.dateProvider = dateProvider;
+        this.logger = logger;
     }
 
     // Action methods
@@ -95,12 +97,7 @@ public class SitesController : ControllerBase {
         site.ContentXPath = model.ContentXPath;
         if (model.ResetUpdateKey) {
             site.UpdateKey = Site.CreateRandomUpdateKey();
-            await dc.EventLog.AddAsync(new EventLogItem {
-                Message = "UpdateKey was reset",
-                Severity = EventLogItemSeverity.Information,
-                DateCreated = this.dateProvider.Now,
-                SiteId = site.Id
-            });
+            this.logger.LogInformation("UpdateKey was reset for site {siteId} ({siteName}).", site.Id, site.Name);
         }
         await this.dc.SaveChangesAsync();
 

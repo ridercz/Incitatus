@@ -29,6 +29,4 @@ public class Page {
 
     public bool UpdateRequired { get; set; }
 
-    public ICollection<EventLogItem> Events { get; set; } = new HashSet<EventLogItem>();
-
 }

@@ -16,6 +16,9 @@ public class Page {
     [Required, MaxLength(1000)]
     public required string Title { get; set; }
 
+    [Required, MaxLength(1000)]
+    public required string Description { get; set; }
+
     [Required, MaxLength(1000), Url]
     public required string Url { get; set; }
 

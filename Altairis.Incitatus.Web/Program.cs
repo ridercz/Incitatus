@@ -5,7 +5,6 @@ using Altairis.Incitatus.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Altairis.Services.DateProvider;
-using Altairis.Incitatus.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 // Load configuration
@@ -47,7 +46,6 @@ builder.Services.AddSwaggerGen(c => {
 
 // Register update services
 builder.Services.Configure<UpdateServiceOptions>(options => options.PollInterval = TimeSpan.FromSeconds(10));
-builder.Services.AddTransient<ISitemapUpdater, SitemapUpdater>();
 builder.Services.AddHostedService<UpdateService>();
 
 // Build and initialize application

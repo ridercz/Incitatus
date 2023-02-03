@@ -8,12 +8,14 @@
 
 	<ItemGroup>
 		<PackageReference Include="Altairis.Services.DateProvider" Version="1.0.0" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.2" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.2">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
 	</ItemGroup>
 
 </Project>

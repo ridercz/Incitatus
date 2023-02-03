@@ -1,7 +1,6 @@
 using System.Net.Mime;
 using Altairis.Services.DateProvider;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Validations;
 
 namespace Altairis.Incitatus.Web.Api.Management;
 

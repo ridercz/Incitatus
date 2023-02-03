@@ -34,6 +34,11 @@ namespace Altairis.Incitatus.Data.Migrations
                     b.Property<DateTime?>("DateLastUpdated")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
                     b.Property<Guid>("SiteId")
                         .HasColumnType("uniqueidentifier");
 

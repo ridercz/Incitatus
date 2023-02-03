@@ -56,7 +56,7 @@ public class SitesController : ControllerBase {
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Post(NewSiteModel model) {
+    public async Task<ActionResult<SiteDetailModel>> Post(NewSiteModel model) {
         if (!this.ModelState.IsValid) return this.BadRequest();
 
         var newSite = new Site {
@@ -70,7 +70,8 @@ public class SitesController : ControllerBase {
         };
         this.dc.Add(newSite);
         await this.dc.SaveChangesAsync();
-        return this.CreatedAtAction(nameof(Get), new { siteId = newSite.Id }, null);
+        var resultModel = new SiteDetailModel(newSite.Id, newSite.Name, newSite.Url, newSite.DateCreated, newSite.DateLastUpdated, newSite.UpdateRequired, newSite.SitemapUrl, newSite.ContentXPath, newSite.UpdateKey, 0, 0);
+        return this.CreatedAtAction(nameof(Get), new { siteId = newSite.Id }, resultModel);
     }
 
     /// <summary>

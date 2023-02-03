@@ -5,6 +5,7 @@ using Altairis.Incitatus.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Altairis.Services.DateProvider;
+using Altairis.Incitatus.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Load configuration

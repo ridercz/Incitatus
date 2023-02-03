@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Altairis.Incitatus.Data\Altairis.Incitatus.Data.csproj" />
+		<ProjectReference Include="..\Altairis.Incitatus.Services\Altairis.Incitatus.Services.csproj" />
 	</ItemGroup>
 
 </Project>

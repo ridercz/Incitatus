@@ -6,26 +6,29 @@ using Altairis.Incitatus.Web;
 using Altairis.Incitatus.Web.Security;
 using Altairis.Services.DateProvider;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
 // Load configuration
 builder.Services.Configure<AppSettings>(builder.Configuration);
 var appSettings = new AppSettings();
 builder.Configuration.Bind(appSettings);
 
-// Register services
+// Register general services
 builder.Services.AddDbContext<IncitatusDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("IncitatusSqlServer"));
 });
+builder.Services.AddSingleton<IDateProvider>(new LocalDateProvider());
+builder.Services.AddControllers();
 
+// Register authentication and authorization
 builder.Services.AddAuthentication(defaultScheme: ApiKeyBearerDefaults.Scheme)
     .AddScheme<ApiKeyBearerAuthenticationSchemeOptions, ApiKeyBearerAuthenticationSchemeHandler>(ApiKeyBearerDefaults.Scheme, options => { });
 builder.Services.AddAuthorization();
-builder.Services.AddSingleton<IDateProvider>(new LocalDateProvider());
 builder.Services.AddSingleton<IBearerTokenValidator, ConfigurationBearerTokenValidator>();
-builder.Services.AddControllers();
+
+// Register Swagger
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("management", new OpenApiInfo {
         Title = "Incitatus Management API",
@@ -57,7 +60,7 @@ builder.Services.AddSwaggerGen(c => {
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Altairis.Incitatus.Web.xml"));
 });
 
-// Register update services
+// Register update service
 builder.Services.Configure<UpdateServiceOptions>(options => options.PollInterval = TimeSpan.FromSeconds(10));
 builder.Services.AddHostedService<UpdateService>();
 

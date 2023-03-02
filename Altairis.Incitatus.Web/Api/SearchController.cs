@@ -50,9 +50,9 @@ public class SearchController : ControllerBase {
     [HttpGet("/api/update/{updateKey}")]
     [ProducesResponseType(StatusCodes.Status202Accepted)]
     public async Task<ActionResult> Update(string updateKey) {
-        var site = await this.dc.Sites.Where(x=>x.UpdateKey == updateKey).FirstOrDefaultAsync();
+        var site = await this.dc.Sites.Where(x => x.UpdateKey == updateKey).FirstOrDefaultAsync();
         if (site != null) {
-            site.UpdateRequired=true;
+            site.UpdateRequired = true;
             await dc.SaveChangesAsync();
         }
         return this.Accepted();

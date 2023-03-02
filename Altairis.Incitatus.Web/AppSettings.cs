@@ -5,6 +5,7 @@ public record AppSettings {
     public string HomepageRedirectUrl { get; set; } = "/docs";
 
     public ApiSettings Api { get; set; } = new ApiSettings();
+
 }
 
 public record ApiSettings {

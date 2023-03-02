@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
 using Altairis.Incitatus.Data;
 using Altairis.Services.DateProvider;
 using HtmlAgilityPack;
@@ -10,7 +12,7 @@ using Microsoft.Extensions.Options;
 
 namespace Altairis.Incitatus.Services;
 
-public class UpdateService : BackgroundService {
+public partial class UpdateService : BackgroundService {
     private readonly ILogger<UpdateService> logger;
     private readonly IServiceScopeFactory scopeFactory;
     private readonly IDateProvider dateProvider;
@@ -175,21 +177,52 @@ public class UpdateService : BackgroundService {
             return null;
         }
         static string limitMaxLength(string s, int maxLength) => s.Length > maxLength ? s[..maxLength] : s;
+        static string normalizeWhitespace(string text, bool multiLine = true) {
+            var sb = new StringBuilder();
+
+            // Normalize lines and remove extra whitespace
+            using var r = new StringReader(text);
+            while (r.Peek() > -1) {
+#pragma warning disable AsyncFixer02 // Long-running or blocking operations inside an async method
+                var line = r.ReadLine();
+#pragma warning restore AsyncFixer02 // Long-running or blocking operations inside an async method
+                if (line is null) continue;
+
+                // Replace all whitespace with regular spaces
+                line = NormalizeWhitespaceRegex().Replace(line, " ");
+
+                // Remove internal double spaces
+                while (line.Contains("  ")) line = line.Replace("  ", " ");
+
+                // Remove whitespace at beginning and end
+                line = line.Trim();
+
+                // Ignore empty lines
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                // Write normalized line
+                sb.Append(line);
+                if (multiLine) sb.Append("\r\n");
+            }
+
+            return sb.ToString();
+        }
 
         // Update values
-        page.Text = doc.DocumentNode.SelectSingleNode(page.Site?.ContentXPath ?? "//main").InnerText;
-        if (string.IsNullOrEmpty(page.Text)) {
-            this.logger.LogWarning("The page {pageId} ({pageUrl}) has null or empty content node.", page.Id, page.Url);
-            return false;
-        }
-        page.Title = getStringFromMetadata(doc, this.options.TitleMetaFields.ToArray()) ?? page.Url;
-        page.Description = getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title;
+        page.Text = normalizeWhitespace(doc.DocumentNode.SelectSingleNode(page.Site?.ContentXPath ?? "//main").InnerText);
+        page.Title = normalizeWhitespace(getStringFromMetadata(doc, this.options.TitleMetaFields.ToArray()) ?? page.Url, multiLine: false);
+        page.Description = normalizeWhitespace(getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title, multiLine: false);
         page.Title = limitMaxLength(page.Title, 1000);
         page.Description = limitMaxLength(page.Description, 1000);
         page.DateLastUpdated = this.dateProvider.Now;
         page.UpdateRequired = false;
+
+        if (string.IsNullOrEmpty(page.Text)) this.logger.LogWarning("The page {pageId} ({pageUrl}) has null or empty content node.", page.Id, page.Url);
         this.logger.LogInformation("Updated text of page {pageId} ({pageUrl}).", page.Id, page.Url);
+        
         return true;
     }
 
+    [GeneratedRegex("\\s")]
+    private static partial Regex NormalizeWhitespaceRegex();
 }

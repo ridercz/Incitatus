@@ -219,7 +219,7 @@ public partial class UpdateService : BackgroundService {
 
         if (string.IsNullOrEmpty(page.Text)) this.logger.LogWarning("The page {pageId} ({pageUrl}) has null or empty content node.", page.Id, page.Url);
         this.logger.LogInformation("Updated text of page {pageId} ({pageUrl}).", page.Id, page.Url);
-        
+
         return true;
     }
 

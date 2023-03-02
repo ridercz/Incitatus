@@ -1,11 +1,11 @@
-global using Altairis.Incitatus.Data;
 global using System.ComponentModel.DataAnnotations;
+global using Altairis.Incitatus.Data;
 global using Microsoft.AspNetCore.Mvc;
+using Altairis.Incitatus.Services;
 using Altairis.Incitatus.Web;
+using Altairis.Services.DateProvider;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Altairis.Services.DateProvider;
-using Altairis.Incitatus.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 // Load configuration

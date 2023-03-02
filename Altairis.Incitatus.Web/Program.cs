@@ -3,8 +3,10 @@ global using Altairis.Incitatus.Data;
 global using Microsoft.AspNetCore.Mvc;
 using Altairis.Incitatus.Services;
 using Altairis.Incitatus.Web;
+using Altairis.Incitatus.Web.Security;
 using Altairis.Services.DateProvider;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +19,12 @@ builder.Configuration.Bind(appSettings);
 builder.Services.AddDbContext<IncitatusDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("IncitatusSqlServer"));
 });
+
+builder.Services.AddAuthentication(defaultScheme: ApiKeyBearerDefaults.Scheme)
+    .AddScheme<ApiKeyBearerAuthenticationSchemeOptions, ApiKeyBearerAuthenticationSchemeHandler>(ApiKeyBearerDefaults.Scheme, options => { });
+builder.Services.AddAuthorization();
 builder.Services.AddSingleton<IDateProvider>(new LocalDateProvider());
+builder.Services.AddSingleton<IBearerTokenValidator, ConfigurationBearerTokenValidator>();
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(c => {
     c.SwaggerDoc("management", new OpenApiInfo {
@@ -42,6 +49,11 @@ builder.Services.AddSwaggerGen(c => {
             Email = appSettings.Api.ContactEmail
         }
     });
+    c.AddSecurityDefinition(name: ApiKeyBearerDefaults.Scheme, securityScheme: new OpenApiSecurityScheme {
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer"
+    });
+    c.OperationFilter<ApiKeyBearerOperationFilter>();
     c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Altairis.Incitatus.Web.xml"));
 });
 

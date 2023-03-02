@@ -1,11 +1,14 @@
 using System.Net.Mime;
+using Altairis.Incitatus.Web.Security;
 using Altairis.Services.DateProvider;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Altairis.Incitatus.Web.Api;
 
 [ApiController, Route("/api/sites"), ApiExplorerSettings(GroupName = "management")]
 [Produces(MediaTypeNames.Application.Json), Consumes(MediaTypeNames.Application.Json)]
+[Authorize(AuthenticationSchemes = ApiKeyBearerDefaults.Scheme)]
 public class SitesController : ControllerBase {
     private readonly IncitatusDbContext dc;
     private readonly IDateProvider dateProvider;
@@ -20,6 +23,7 @@ public class SitesController : ControllerBase {
     }
 
     // Action methods
+
     /// <summary>
     /// Gets the list of sites.
     /// </summary>

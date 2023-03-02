@@ -12,6 +12,13 @@
             <param name="query">The search query</param>
             <returns></returns>
         </member>
+        <member name="M:Altairis.Incitatus.Web.Api.SearchController.Update(System.String)">
+            <summary>
+            Marks the specified site as in need of update.
+            </summary>
+            <param name="updateKey">The update key.</param>
+            <returns></returns>
+        </member>
         <member name="M:Altairis.Incitatus.Web.Api.SitesController.GetIndex">
             <summary>
             Gets the list of sites.

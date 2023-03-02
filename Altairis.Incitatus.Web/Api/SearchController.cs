@@ -2,7 +2,6 @@
 using Altairis.Services.DateProvider;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using static Altairis.Incitatus.Web.Api.SitesController;
 
 namespace Altairis.Incitatus.Web.Api;
 
@@ -42,5 +41,21 @@ public class SearchController : ControllerBase {
     }
 
     public record SearchResultModel(string Url, string Title, string Description, DateTime? LastUpdated);
+
+    /// <summary>
+    /// Marks the specified site as in need of update.
+    /// </summary>
+    /// <param name="updateKey">The update key.</param>
+    /// <returns></returns>
+    [HttpGet("/api/update/{updateKey}")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public async Task<ActionResult> Update(string updateKey) {
+        var site = await this.dc.Sites.Where(x=>x.UpdateKey == updateKey).FirstOrDefaultAsync();
+        if (site != null) {
+            site.UpdateRequired=true;
+            await dc.SaveChangesAsync();
+        }
+        return this.Accepted();
+    }
 
 }

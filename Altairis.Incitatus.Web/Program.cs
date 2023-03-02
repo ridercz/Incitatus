@@ -60,8 +60,8 @@ using (var scope = app.Services.CreateScope()) {
 app.UseSwagger();
 app.UseSwaggerUI(c => {
     c.RoutePrefix = "docs";
-    c.SwaggerEndpoint("/swagger/search/swagger.json", "Search API");
-    c.SwaggerEndpoint("/swagger/management/swagger.json", "Management API");
+    c.SwaggerEndpoint("/swagger/search/swagger.json", "Search");
+    c.SwaggerEndpoint("/swagger/management/swagger.json", "Management");
 });
 app.MapControllers();
 app.MapGet("/", () => Results.Redirect(appSettings.HomepageRedirectUrl));

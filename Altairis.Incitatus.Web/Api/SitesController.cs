@@ -2,9 +2,9 @@ using System.Net.Mime;
 using Altairis.Services.DateProvider;
 using Microsoft.EntityFrameworkCore;
 
-namespace Altairis.Incitatus.Web.Api.Management;
+namespace Altairis.Incitatus.Web.Api;
 
-[ApiController, Route("/api/sites")]
+[ApiController, Route("/api/sites"), ApiExplorerSettings(GroupName = "management")]
 [Produces(MediaTypeNames.Application.Json), Consumes(MediaTypeNames.Application.Json)]
 public class SitesController : ControllerBase {
     private readonly IncitatusDbContext dc;

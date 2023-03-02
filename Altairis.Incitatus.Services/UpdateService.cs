@@ -115,6 +115,7 @@ public class UpdateService : BackgroundService {
         }
 
         // Save changes
+        site.DateLastUpdated = this.dateProvider.Now;
         site.UpdateRequired = false;
         await dc.SaveChangesAsync(cancellationToken);
     }

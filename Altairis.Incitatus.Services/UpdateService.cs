@@ -137,15 +137,16 @@ public class UpdateService : BackgroundService {
         foreach (var item in urlElements) {
             var loc = item.SelectSingleNode("sm:loc", mgr)?.InnerText ?? string.Empty;
             var lastModString = item.SelectSingleNode("sm:lastmod", mgr)?.InnerText ?? string.Empty;
+            var lastModDate = DateTime.MinValue;
             var isValid = !string.IsNullOrEmpty(loc)
                 && !string.IsNullOrEmpty(lastModString)
-                && DateTime.TryParse(lastModString, out _)
+                && DateTime.TryParse(lastModString, out lastModDate)
                 && Uri.TryCreate(loc, UriKind.Absolute, out _);
             if (!isValid) {
                 this.logger.LogWarning("Sitemap item {loc} for site {siteId} ({siteName}) is invalid.", loc, site.Id, site.Name);
                 continue;
             }
-            r.Add(new SitemapItem(loc, DateTime.Parse(lastModString)));
+            r.Add(new SitemapItem(loc, lastModDate));
         }
         return r;
     }

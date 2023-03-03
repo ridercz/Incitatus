@@ -61,8 +61,17 @@ builder.Services.AddSwaggerGen(c => {
 });
 
 // Register update service
-builder.Services.Configure<UpdateServiceOptions>(options => options.PollInterval = TimeSpan.FromSeconds(10));
-builder.Services.AddHostedService<UpdateService>();
+if (appSettings.UpdateService.Enabled) {
+    builder.Services.Configure<UpdateServiceOptions>(options => {
+        options.ConnectionTimeout = appSettings.UpdateService.ConnectionTimeout;
+        options.DelayBetweenPageRequests = appSettings.UpdateService.DelayBetweenPageRequests;
+        options.DescriptionMetaFields = appSettings.UpdateService.DescriptionMetaFields;
+        options.PollInterval = appSettings.UpdateService.PollInterval;
+        options.PooledCollectionLifetime = appSettings.UpdateService.PooledCollectionLifetime;
+        options.TitleMetaFields = appSettings.UpdateService.TitleMetaFields;
+    });
+    builder.Services.AddHostedService<UpdateService>();
+}
 
 // Build and initialize application
 var app = builder.Build();

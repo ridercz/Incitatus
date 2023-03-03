@@ -17,7 +17,7 @@ public class ApiKeyBearerAuthenticationSchemeHandler : AuthenticationHandler<Api
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync() {
         // Get the Authorization header value
         var headerValue = this.Context.Request.Headers.Authorization.FirstOrDefault(x => x != null && x.StartsWith(BearerSchemePrefix, StringComparison.OrdinalIgnoreCase) && x.Length > BearerSchemePrefix.Length);
-        if (headerValue == null) return AuthenticateResult.Fail("Authorization header is missing or invalid.");
+        if (headerValue == null) return AuthenticateResult.NoResult();
 
         // Get the bearer token
         var token = headerValue[BearerSchemePrefix.Length..];

@@ -17,20 +17,23 @@ public class IncitatusDbContext : DbContext {
 
     // Methods
 
-    public IQueryable<Page> SearchStories(string query) {
-        var ftxQuery = SqlServerQueryTranslator.ToSqlQuery(query);
-        return this.Set<Page>().FromSqlInterpolated($"SELECT TOP 100 PERCENT S.* FROM Pages AS S INNER JOIN CONTAINSTABLE(Pages, *, {ftxQuery}) AS R ON R.[KEY] = S.Id ORDER BY R.RANK DESC");
-    }
+    public record SearchResult(int Rank, string Url, string Title, string Description, DateTime DateLastUpdated);
 
-    public IQueryable<Page> SearchStories(Guid siteId, string query) {
-        var ftxQuery = SqlServerQueryTranslator.ToSqlQuery(query);
-        return this.Set<Page>().FromSqlInterpolated($"SELECT TOP 100 PERCENT S.* FROM Pages AS S INNER JOIN CONTAINSTABLE(Pages, *, {ftxQuery}) AS R ON R.[KEY] = S.Id WHERE S.SiteId = {siteId} ORDER BY R.RANK DESC");
-    }
+    public IQueryable<SearchResult> SearchPages(Guid siteId, string query)
+        => this.FromExpression(() => SearchPages(siteId, SqlServerQueryTranslator.ToSqlQuery(query)).OrderByDescending(x => x.Rank));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
+
+        // Setup update key as nchar instead of nvarchar
         modelBuilder.Entity<Site>().Property(x => x.UpdateKey)
             .HasColumnType("nchar(30)")
             .IsFixedLength();
+
+        // Map method to TVF
+        modelBuilder.Entity<SearchResult>().ToTable((string?)null).HasNoKey();
+        var searchPagesMethodInfo = typeof(IncitatusDbContext).GetMethod(nameof(SearchPages), new[] { typeof(Guid), typeof(string) }) ?? throw new Exception("The SearchPages method was not found.");
+        modelBuilder.HasDbFunction(searchPagesMethodInfo).HasName("SearchPagesInSite");
     }
+
 }

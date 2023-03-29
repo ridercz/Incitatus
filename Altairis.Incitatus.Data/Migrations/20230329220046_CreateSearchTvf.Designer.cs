@@ -4,6 +4,7 @@ using Altairis.Incitatus.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Altairis.Incitatus.Data.Migrations
 {
     [DbContext(typeof(IncitatusDbContext))]
-    partial class IncitatusDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230329220046_CreateSearchTvf")]
+    partial class CreateSearchTvf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

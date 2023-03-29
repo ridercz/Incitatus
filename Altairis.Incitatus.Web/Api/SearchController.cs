@@ -33,7 +33,7 @@ public class SearchController : ControllerBase {
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<IEnumerable<SearchResultModel>>> Get(Guid siteId, string query) {
         try {
-            var result = await this.dc.SearchStories(siteId, query).Select(x => new SearchResultModel(x.Url, x.Title, x.Description, x.DateLastUpdated)).ToListAsync();
+            var result = await this.dc.SearchPages(siteId, query).Select(x => new SearchResultModel(x.Url, x.Title, x.Description, x.DateLastUpdated)).ToListAsync();
             return this.Ok(result);
         } catch (SqlException sex) when (sex.Number == 7645) { // Null or empty full-text predicate.
             return this.BadRequest();

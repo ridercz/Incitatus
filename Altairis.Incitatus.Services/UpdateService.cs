@@ -91,7 +91,7 @@ public partial class UpdateService : BackgroundService {
                 // Existing page was updated
                 if (!item.UpdateRequired) {
                     this.logger.LogInformation("Page {pageId} ({pageUrl}) is newer, setting for update.", item.Id, item.Url);
-                    await dc.Pages.Where(x => x.Id == item.Id).ExecuteUpdateAsync(x => x.SetProperty(p => p.UpdateRequired, true), cancellationToken);
+                    await dc.Pages.Where(x => x.Id == item.Id).ExecuteUpdateAsync(x => x.SetProperty(p => p.UpdateRequired, true).SetProperty(p => p.DateLastUpdated, correspondingSitemapItem.Date), cancellationToken);
                 }
                 sitemapItems.Remove(correspondingSitemapItem);
             } else {
@@ -109,6 +109,7 @@ public partial class UpdateService : BackgroundService {
                 Description = string.Empty,
                 Text = string.Empty,
                 DateCreated = this.dateProvider.Now,
+                DateLastUpdated = item.Date,
                 SiteId = site.Id,
                 Url = item.Url,
                 UpdateRequired = true
@@ -215,7 +216,6 @@ public partial class UpdateService : BackgroundService {
             page.Description = normalizeWhitespace(getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title, multiLine: false);
             page.Title = limitMaxLength(page.Title, 1000);
             page.Description = limitMaxLength(page.Description, 1000);
-            page.DateLastUpdated = this.dateProvider.Now;
             page.UpdateRequired = false;
         } catch (Exception ex) {
             this.logger.LogWarning(ex, "Cannot parse HTML of page {pageId} ({pageUrl}).", page.Id, page.Url);

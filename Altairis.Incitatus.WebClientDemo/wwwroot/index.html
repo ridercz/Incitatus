@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Incitatus Web Client Demo</title>
+    <style type="text/css">
+        html {
+            background-color: #ccc;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #fff;
+            max-width: 1100px;
+            margin: 3em auto;
+        }
+
+        form {
+            padding: 1ex;
+            background-color: #eee;
+            text-align: center;
+        }
+
+            form input[type=search] {
+                width: 75%;
+                font-size: 150%;
+                line-height: 150%;
+                padding: .5ex;
+                border: 1px solid #333;
+                border-radius: 5px;
+            }
+
+            form input[type=submit] {
+                font-size: 150%;
+                line-height: 150%;
+                padding: .5ex;
+                border: none;
+            }
+
+        h1 {
+            font-size: 200%;
+            font-weight: normal;
+            margin-top: 0;
+        }
+
+        div.error {
+            background-color: #fc0;
+            color: #c00;
+            text-align: center;
+            padding: 1ex;
+        }
+
+        article {
+            margin: 1em;
+            clear: both;
+        }
+
+            article > header {
+                font-size: 125%;
+                font-weight: bold;
+            }
+
+            article > aside {
+                float: right;
+                color: #666;
+            }
+    </style>
+</head>
+<body>
+    <form id="searchform" method="dialog">
+        <h1>Incitatus Web Client Demo</h1>
+        <p><input type="search" name="query" placeholder="Enter your search query..." /><input type="submit" value="&#x1F50D;" /></p>
+    </form>
+    <div id="results"></div>
+    <script type="text/javascript">
+        searchform.onsubmit = async function () {
+            // Change the address and URI to correspond your site
+            const url = "http://localhost:5000/api/search/95677ED8-360D-4DDA-72A4-08DB4FF0B5DE.html?locale=en-US&query=" + encodeURIComponent(searchform.query.value);
+
+            // Get element to store results in
+            const resultsDiv = document.getElementById("results");
+
+            // Call API
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    // Success
+                    resultsDiv.innerHTML = await response.text();
+                } else if (response.status == 404) {
+                    // Empty result
+                    resultsDiv.innerHTML = "<div class='error'>No results matched your query. If you expect some, check if the GUID in source code of this page matches the one of your site.</div>";
+                } else {
+                    // Other error
+                    resultsDiv.innerHTML = "<div class='error'>Error: " + response.status + ": " + response.statusText + "</div>";
+                }
+            } catch (e) {
+                // Handle network or CORS error
+                resultsDiv.innerHTML = "<div class='error'>Network Error: " + e.message + "</div>";
+            }
+        };
+    </script>
+</body>
+</html>

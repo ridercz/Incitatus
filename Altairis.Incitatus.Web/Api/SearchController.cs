@@ -2,6 +2,7 @@
 using System.Net.Mime;
 using System.Text;
 using Altairis.Services.DateProvider;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,6 +34,7 @@ public class SearchController : ControllerBase {
     [HttpGet("{siteId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [EnableCors("public")]
     public async Task<ActionResult<IEnumerable<SearchResultModel>>> Get(Guid siteId, string query) {
         try {
             var result = await this.dc.SearchPages(siteId, query).Select(x => new SearchResultModel(x.Url, x.Title, x.Description, x.DateLastUpdated)).ToListAsync();
@@ -56,6 +58,7 @@ public class SearchController : ControllerBase {
     [ProducesResponseType(typeof(string), StatusCodes.Status200OK, "text/html")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [EnableCors("public")]
     public async Task<ActionResult<string>> GetHtml(Guid siteId, string query, string? locale = null, string dateFormat = "d") {
         try {
             var result = await this.dc.SearchPages(siteId, query).Select(x => new SearchResultModel(x.Url, x.Title, x.Description, x.DateLastUpdated)).ToListAsync();

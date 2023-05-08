@@ -21,6 +21,9 @@ builder.Services.AddDbContext<IncitatusDbContext>(options => {
 });
 builder.Services.AddSingleton<IDateProvider>(new LocalDateProvider());
 builder.Services.AddControllers();
+builder.Services.AddCors(options => {
+    options.AddPolicy("public", policy => policy.AllowAnyOrigin());
+});
 
 // Register authentication and authorization
 builder.Services.AddAuthentication(defaultScheme: ApiKeyBearerDefaults.Scheme)
@@ -79,6 +82,9 @@ using (var scope = app.Services.CreateScope()) {
     var dc = scope.ServiceProvider.GetRequiredService<IncitatusDbContext>();
     await dc.Database.MigrateAsync();
 }
+
+// Add middleware
+app.UseCors();
 
 // Map requests
 app.UseSwagger();

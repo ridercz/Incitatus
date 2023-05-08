@@ -209,13 +209,18 @@ public partial class UpdateService : BackgroundService {
         }
 
         // Update values
-        page.Text = normalizeWhitespace(doc.DocumentNode.SelectSingleNode(page.Site?.ContentXPath ?? "//main").InnerText);
-        page.Title = normalizeWhitespace(getStringFromMetadata(doc, this.options.TitleMetaFields.ToArray()) ?? page.Url, multiLine: false);
-        page.Description = normalizeWhitespace(getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title, multiLine: false);
-        page.Title = limitMaxLength(page.Title, 1000);
-        page.Description = limitMaxLength(page.Description, 1000);
-        page.DateLastUpdated = this.dateProvider.Now;
-        page.UpdateRequired = false;
+        try {
+            page.Text = normalizeWhitespace(doc.DocumentNode.SelectSingleNode(page.Site?.ContentXPath ?? "//main").InnerText);
+            page.Title = normalizeWhitespace(getStringFromMetadata(doc, this.options.TitleMetaFields.ToArray()) ?? page.Url, multiLine: false);
+            page.Description = normalizeWhitespace(getStringFromMetadata(doc, this.options.DescriptionMetaFields.ToArray()) ?? page.Title, multiLine: false);
+            page.Title = limitMaxLength(page.Title, 1000);
+            page.Description = limitMaxLength(page.Description, 1000);
+            page.DateLastUpdated = this.dateProvider.Now;
+            page.UpdateRequired = false;
+        } catch (Exception ex) {
+            this.logger.LogWarning(ex, "Cannot parse HTML of page {pageId} ({pageUrl}).", page.Id, page.Url);
+            return false;
+        }
 
         if (string.IsNullOrEmpty(page.Text)) this.logger.LogWarning("The page {pageId} ({pageUrl}) has null or empty content node.", page.Id, page.Url);
         this.logger.LogInformation("Updated text of page {pageId} ({pageUrl}).", page.Id, page.Url);

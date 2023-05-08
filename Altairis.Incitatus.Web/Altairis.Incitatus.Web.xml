@@ -12,6 +12,16 @@
             <param name="query">The search query</param>
             <returns></returns>
         </member>
+        <member name="M:Altairis.Incitatus.Web.Api.SearchController.GetHtml(System.Guid,System.String,System.String,System.String)">
+            <summary>
+            Gets search results for specified site as HTML fragment.
+            </summary>
+            <param name="siteId">The site identifier.</param>
+            <param name="query">The search query.</param>
+            <param name="locale">The locale code, ie. <c>en-US</c> or <c>cs-CZ</c>. If missing or invalid, server culture is used.</param>
+            <param name="dateFormat">The last update date format string. If missing, default date format for selected culture is used.</param>
+            <returns></returns>
+        </member>
         <member name="M:Altairis.Incitatus.Web.Api.SearchController.Update(System.String)">
             <summary>
             Marks the specified site as in need of update.

@@ -8,10 +8,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Altairis.Services.DateProvider" Version="1.0.0" />
-		<PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
+		<PackageReference Include="HtmlAgilityPack" Version="1.11.51" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -96,4 +96,14 @@ public class SearchController : ControllerBase {
         return this.Accepted();
     }
 
+    /// <summary>
+    /// Marks the specified site as in need of update. 
+    /// The POST method is available for compatibility with GitHub webhooks.
+    /// </summary>
+    /// <param name="updateKey">The update key.</param>
+    /// <returns></returns>
+    [HttpPost("/api/update/{updateKey}")]
+    [ProducesResponseType(StatusCodes.Status202Accepted)]
+    public Task<ActionResult> UpdatePost(string updateKey) => this.Update(updateKey);
+
 }

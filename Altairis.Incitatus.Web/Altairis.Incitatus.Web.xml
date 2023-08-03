@@ -29,6 +29,14 @@
             <param name="updateKey">The update key.</param>
             <returns></returns>
         </member>
+        <member name="M:Altairis.Incitatus.Web.Api.SearchController.UpdatePost(System.String)">
+            <summary>
+            Marks the specified site as in need of update. 
+            The POST method is available for compatibility with GitHub webhooks.
+            </summary>
+            <param name="updateKey">The update key.</param>
+            <returns></returns>
+        </member>
         <member name="M:Altairis.Incitatus.Web.Api.SitesController.GetIndex">
             <summary>
             Gets the list of sites.
